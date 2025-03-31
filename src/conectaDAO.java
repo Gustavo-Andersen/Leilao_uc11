@@ -16,9 +16,10 @@ import javax.swing.JOptionPane;
  * @author Adm
  */
 public class conectaDAO {
+    Connection  conn = null;
     
     public Connection connectDB(){
-        Connection conn = null;
+        
         
         try {
         
@@ -29,6 +30,23 @@ public class conectaDAO {
             JOptionPane.showMessageDialog(null, "Erro ConectaDAO" + erro.getMessage());
         }
         return conn;
+    }
+    
+    public boolean disconnectDB(){
+        
+        try{
+            
+        
+           if(conn != null && !conn.isClosed()){
+              
+               conn.close();
+               return true;
+           }
+        }catch(SQLException sqle){
+            JOptionPane.showMessageDialog(null, "Erro ao desconectar do banco" + sqle.getMessage());
+            return false;
+        }
+        return false;
     }
     
 }
