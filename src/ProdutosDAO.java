@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.sql.SQLException;
+import javax.swing.table.DefaultTableModel;
 
 
 public class ProdutosDAO {
@@ -53,8 +54,71 @@ public class ProdutosDAO {
         }
     }
     
-    public ArrayList<ProdutosDTO> listarProdutos() {
-        return listagem;
+    public DefaultTableModel getTabela() {
+    String[] colunas = {"id", "produto", "valor", "status"};
+    DefaultTableModel tabela = new DefaultTableModel(colunas, 0);
+
+    try {
+        String sql = "SELECT id, nome, valor, status FROM produtos"; 
+
+        conn = banco.connectDB();
+        prep = conn.prepareStatement(sql); 
+        
+        resultset = prep.executeQuery(); 
+
+        
+        while (resultset.next()) {
+            Object[] linha = {
+                resultset.getInt("id"),
+                resultset.getString("nome"), 
+                resultset.getDouble("valor"),
+                resultset.getString("status")
+            };
+            tabela.addRow(linha);
+        }
+        
+    } catch (SQLException sqle) {
+        JOptionPane.showMessageDialog(null, "Erro com a listagem: " + sqle.getMessage());
+    } finally {
+        banco.disconnectDB(); 
     }
+
+    return tabela;
+}
+     public DefaultTableModel getTabelaP(int id) {
+    String[] colunas = {"id", "produto", "valor", "status"};
+    DefaultTableModel tabela = new DefaultTableModel(colunas, 0);
+
+    try {
+        String sql = "SELECT id, nome, valor, status FROM produtos WHERE id = ?"; 
+
+        conn = banco.connectDB();
+        prep = conn.prepareStatement(sql); 
+        
+        prep.setInt(1, id);
+                
+        resultset = prep.executeQuery(); 
+
+        
+        while (resultset.next()) {
+            Object[] linha = {
+                resultset.getInt("id"),
+                resultset.getString("nome"), 
+                resultset.getDouble("valor"),
+                resultset.getString("status")
+            };
+            tabela.addRow(linha);
+        }
+        
+    } catch (SQLException sqle) {
+        JOptionPane.showMessageDialog(null, "Erro com a listagem: " + sqle.getMessage());
+    } finally {
+        banco.disconnectDB(); 
+    }
+
+    return tabela;
+}
+    
+    
 }
 
