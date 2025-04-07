@@ -85,35 +85,46 @@ public class ProdutosDAO {
 
     return tabela;
 }
-     public DefaultTableModel getTabelaP(int id) {
+     
+public void venderProduto(int id) {
+    conn = banco.connectDB();
+    String sql = "UPDATE produtos SET status = 'Vendido' WHERE id = ?";
+    
+    try {
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, id);
+        ps.executeUpdate();
+        JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Erro ao vender produto: " + e.getMessage());
+    } finally {
+        banco.disconnectDB();
+    }
+}     
+
+public DefaultTableModel listarProdutosVendidos() {
     String[] colunas = {"id", "produto", "valor", "status"};
     DefaultTableModel tabela = new DefaultTableModel(colunas, 0);
 
     try {
-        String sql = "SELECT id, nome, valor, status FROM produtos WHERE id = ?"; 
-
+        String sql = "SELECT id, nome, valor, status FROM produtos WHERE status = 'Vendido'";
         conn = banco.connectDB();
-        prep = conn.prepareStatement(sql); 
-        
-        prep.setInt(1, id);
-                
-        resultset = prep.executeQuery(); 
+        prep = conn.prepareStatement(sql);
+        resultset = prep.executeQuery();
 
-        
         while (resultset.next()) {
             Object[] linha = {
                 resultset.getInt("id"),
-                resultset.getString("nome"), 
+                resultset.getString("nome"),
                 resultset.getDouble("valor"),
                 resultset.getString("status")
             };
             tabela.addRow(linha);
         }
-        
-    } catch (SQLException sqle) {
-        JOptionPane.showMessageDialog(null, "Erro com a listagem: " + sqle.getMessage());
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Erro ao listar produtos vendidos: " + e.getMessage());
     } finally {
-        banco.disconnectDB(); 
+        banco.disconnectDB();
     }
 
     return tabela;
